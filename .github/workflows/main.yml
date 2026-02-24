@@ -16,26 +16,32 @@ jobs:
       - name: Make script executable
         run: chmod +x ./scripts/script.sh
 
-      - name: Run script
+      - name: Generate Code with ChatGPT
+        id: generate_code
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           ./scripts/script.sh \
-            "${{ secrets.GITHUB_TOKEN }}" \
-            "${{ github.repository }}" \
-            "${{ github.event.issue.number }}" \
-            "${{ secrets.OPENROUTER_API_KEY }}" \
+            "${{ env.GITHUB_TOKEN }}" \
+            "${{ env.REPOSITORY }}" \
+            "${{ env.ISSUE_NUMBER }}" \
+            "${{ env.OPENROUTER_API_KEY }}" \
             > output.txt
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: autocoder-artifact
           path: output.txt
 
-      - name: Download artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: autocoder-artifact
           path: autocoder-artifact
 
-      - name: List files recursively
+      - name: Display Generated Code using the ls command
         run: ls -R autocoder-artifact
