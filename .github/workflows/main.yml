@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Make script executable
+      - name: Set permissions for script.sh
         run: chmod +x ./scripts/script.sh
 
       - name: Generate Code with ChatGPT
@@ -28,20 +28,19 @@ jobs:
             "${{ env.GITHUB_TOKEN }}" \
             "${{ env.REPOSITORY }}" \
             "${{ env.ISSUE_NUMBER }}" \
-            "${{ env.OPENROUTER_API_KEY }}" \
-            > output.txt
+            "${{ env.OPENROUTER_API_KEY }}"
 
-      - name: Upload Artifact
+      - name: Upload generated files as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: autocoder-artifact
-          path: output.txt
+          path: .
 
-      - name: Download Artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: autocoder-artifact
           path: autocoder-artifact
 
-      - name: Display Generated Code using the ls command
+      - name: List files in the artifact
         run: ls -R autocoder-artifact
