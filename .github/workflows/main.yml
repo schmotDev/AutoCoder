@@ -1,22 +1,41 @@
-name: Issue Event Workflow
+name: Autocoder Bot
 
 on:
   issues:
-    types: [opened, reopened]
+    types: [opened, labeled]
 
 jobs:
-  issue_info:
+  autocoder:
+    if: contains(github.event.issue.labels.*.name, 'autocoder-bot')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x ./scripts/script.sh
 
       - name: Run script
         run: |
-          chmod +x ./scripts/script.sh
           ./scripts/script.sh \
             "${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.repository }}" \
             "${{ github.event.issue.number }}" \
-            "${{ secrets.OPENROUTER_API_KEY }}"
+            "${{ secrets.OPENROUTER_API_KEY }}" \
+            > output.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: autocoder-artifact
+          path: output.txt
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: autocoder-artifact
+          path: autocoder-artifact
+
+      - name: List files recursively
+        run: ls -R autocoder-artifact
