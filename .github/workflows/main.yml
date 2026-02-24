@@ -39,7 +39,7 @@ jobs:
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
-       with:
+        with:
           name: autocoder-artifact
           path: ./autocoder-artifact
  
