@@ -1,1 +1,13 @@
+name: Workflow Name
+on:
+  push:
 
+jobs:
+  job_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Say Hello
+        run: echo "Hello, world"
