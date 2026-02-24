@@ -1,13 +1,29 @@
-name: Workflow Name
+name: Issue Event Workflow
+
 on:
-  push:
+  issues:
+    types: [opened, reopened]
 
 jobs:
-  job_name:
+  issue_info:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Say Hello
-        run: echo "Hello, world"
+      - name: Set issue environment variables
+        run: |
+          echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+          echo "ISSUE_TITLE=${{ github.event.issue.title }}" >> $GITHUB_ENV
+          echo "ISSUE_BODY=${{ github.event.issue.body }}" >> $GITHUB_ENV
+          echo "ISSUE_ASSIGNEES=${{ join(github.event.issue.assignees.*.login, ', ') }}" >> $GITHUB_ENV
+          echo "ISSUE_LABELS=${{ join(github.event.issue.labels.*.name, ', ') }}" >> $GITHUB_ENV
+
+      - name: Echo issue information
+        run: |
+          echo "Issue Number: $ISSUE_NUMBER"
+          echo "Issue Title: $ISSUE_TITLE"
+          echo "Issue Body: $ISSUE_BODY"
+          echo "Issue Assignees: $ISSUE_ASSIGNEES"
+          echo "Issue Labels: $ISSUE_LABELS"
